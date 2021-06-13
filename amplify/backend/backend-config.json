@@ -24,5 +24,11 @@
         }
       }
     }
+  },
+  "storage": {
+    "s32fe866ab": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation"
+    }
   }
 }

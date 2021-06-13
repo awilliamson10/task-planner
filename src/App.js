@@ -3,7 +3,11 @@ import Todo from "./components/Todo";
 import Form from "./components/Form";
 import FilterButton from "./components/FilterButton";
 import { nanoid } from "nanoid";
+import { API } from 'aws-amplify';
 import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react'
+import { listTasks } from './graphql/queries';
+import { createTask as createTaskMutation, deleteTask as deleteTaskMutation } from './graphql/mutations';
+
 
 function usePrevious(value) {
   const ref = useRef();
@@ -21,11 +25,20 @@ const FILTER_MAP = {
 
 const FILTER_NAMES = Object.keys(FILTER_MAP);
 
-function App(props) {
-  const [tasks, setTasks] = useState(props.tasks);
+function App() {
+  const [tasks, setTasks] = useState([]);
   const [filter, setFilter] = useState('All');
 
-  function toggleTaskCompleted(id) {
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  async function fetchTasks() {
+    const apiData = await API.graphql({ query: listTasks });
+    setTasks(apiData.data.listTasks.items);
+  }
+
+  async function toggleTaskCompleted(id) {
     const updatedTasks = tasks.map(task => {
       if (id === task.id) {
         return {...task, completed: !task.completed}
@@ -33,14 +46,16 @@ function App(props) {
       return task;
     });
     setTasks(updatedTasks);
+    await API.graphql({ query: createTaskMutation, variables: { input: updatedTasks } });
   }
 
-  function deleteTask(id) {
+  async function deleteTask(id) {
     const remainingTasks = tasks.filter(task => id !== task.id);
     setTasks(remainingTasks);
+    await API.graphql({ query: deleteTaskMutation, variables: { input: { id } }});
   }
 
-  function editTask(id, newName) {
+  async function editTask(id, newName) {
     const editedTaskList = tasks.map(task => {
       if(id === task.id) {
         return {...task, name: newName}
@@ -48,6 +63,7 @@ function App(props) {
       return task;
     });
     setTasks(editedTaskList);
+    await API.graphql({ query: createTaskMutation, variables: { input: editedTaskList } });
   }
 
   const taskList = tasks
@@ -73,8 +89,9 @@ function App(props) {
     />
   ));
 
-  function addTask(name) {
+  async function addTask(name) {
     const newTask = {id: "todo-" + nanoid(), name: name, completed: false};
+    await API.graphql({ query: createTaskMutation, variables: { input: newTask } });
     setTasks([...tasks, newTask]);
   }
 
@@ -106,6 +123,7 @@ function App(props) {
       >
         {taskList}
       </ul>
+      <br />
       <AmplifySignOut />
     </div>
   );

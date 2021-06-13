@@ -1,4 +1,4 @@
-type Todo @model {
+type Task @model {
   id: ID!
   name: String!
   completed: Boolean!

@@ -20,7 +20,7 @@ function Todo(props) {
   }
 
   function handleSubmit(e) {
-    if(newName != '') {
+    if(newName !== '') {
       e.preventDefault();
       props.editTask(props.id, newName);
       setNewName('');

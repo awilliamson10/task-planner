@@ -9,7 +9,7 @@ function Form(props) {
   }
 
   function handleSubmit(e) {
-    if(name != ""){
+    if(name !== ""){
       e.preventDefault();
       props.addTask(name);
       setName("");
