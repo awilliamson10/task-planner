@@ -1,10 +1,28 @@
 {
   "auth": {
-    "taskplanner314a3b40": {
+    "taskplanner6c9e9d68": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
       "customAuth": false
+    }
+  },
+  "api": {
+    "taskplanner": {
+      "service": "AppSync",
+      "providerPlugin": "awscloudformation",
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "API_KEY",
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 7,
+              "description": ""
+            }
+          },
+          "additionalAuthenticationProviders": []
+        }
+      }
     }
   }
 }
