@@ -1,0 +1,10 @@
+{
+  "auth": {
+    "taskplanner314a3b40": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false
+    }
+  }
+}

@@ -3,6 +3,7 @@ import Todo from "./components/Todo";
 import Form from "./components/Form";
 import FilterButton from "./components/FilterButton";
 import { nanoid } from "nanoid";
+import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react'
 
 function usePrevious(value) {
   const ref = useRef();
@@ -105,8 +106,9 @@ function App(props) {
       >
         {taskList}
       </ul>
+      <AmplifySignOut />
     </div>
   );
 }
 
-export default App;
+export default withAuthenticator(App);
