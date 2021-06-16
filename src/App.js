@@ -6,7 +6,7 @@ import { nanoid } from "nanoid";
 import { API } from 'aws-amplify';
 import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react'
 import { listTasks } from './graphql/queries';
-import { createTask as createTaskMutation, deleteTask as deleteTaskMutation } from './graphql/mutations';
+import * as mutations from './graphql/mutations';
 
 
 function usePrevious(value) {
@@ -39,31 +39,49 @@ function App() {
   }
 
   async function toggleTaskCompleted(id) {
+    var index = 0;
+    var i = null;
     const updatedTasks = tasks.map(task => {
+      index++;
       if (id === task.id) {
+        i = index;
         return {...task, completed: !task.completed}
       }
       return task;
     });
     setTasks(updatedTasks);
-    await API.graphql({ query: createTaskMutation, variables: { input: updatedTasks } });
+    const upTask = {
+      id: tasks[[i-1]].id,
+      name: tasks[[i-1]].name,
+      completed: !tasks[[i-1]].completed
+    }
+    await API.graphql({ query: mutations.updateTask, variables: { input: upTask } });
   }
 
   async function deleteTask(id) {
     const remainingTasks = tasks.filter(task => id !== task.id);
     setTasks(remainingTasks);
-    await API.graphql({ query: deleteTaskMutation, variables: { input: { id } }});
+    await API.graphql({ query: mutations.deleteTask, variables: { input: { id } }});
   }
 
   async function editTask(id, newName) {
+    var index = 0;
+    var i = null;
     const editedTaskList = tasks.map(task => {
-      if(id === task.id) {
+      index++;
+      if (id === task.id) {
+        i = index;
         return {...task, name: newName}
       }
       return task;
     });
     setTasks(editedTaskList);
-    await API.graphql({ query: createTaskMutation, variables: { input: editedTaskList } });
+    const upTask = {
+      id: tasks[[i-1]].id,
+      name: newName,
+      completed: !tasks[[i-1]].completed
+    }
+    await API.graphql({ query: mutations.updateTask, variables: { input: upTask } });
   }
 
   const taskList = tasks
@@ -91,7 +109,7 @@ function App() {
 
   async function addTask(name) {
     const newTask = {id: "todo-" + nanoid(), name: name, completed: false};
-    await API.graphql({ query: createTaskMutation, variables: { input: newTask } });
+    await API.graphql({ query: mutations.createTask, variables: { input: newTask } });
     setTasks([...tasks, newTask]);
   }
 

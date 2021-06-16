@@ -11,6 +11,7 @@ function usePrevious(value) {
 function Todo(props) {
   const [isEditing, setEditing] = useState(false);
   const [newName, setNewName] = useState('');
+  const [newDate, setNewDate] = useState(new Date());
   const editFieldRef = useRef(null);
   const editButtonRef = useRef(null);
   const wasEditing = usePrevious(isEditing);
